@@ -53,6 +53,7 @@ export default function Cats({
           cats={cats}
           cat={cats.find((cat) => cat.ID === router.query.catId)}
           returnHref={returnHref}
+          position="fixed"
         />
       ) : (
         ""
