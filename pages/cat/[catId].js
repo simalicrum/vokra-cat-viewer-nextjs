@@ -42,6 +42,7 @@ const CatPage = ({ cats }) => {
             cat={cats.find((i) => i.ID === catId)}
             cats={cats}
             position="static"
+            url
           />
         </div>
       </div>
