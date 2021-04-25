@@ -8,11 +8,11 @@ import CatCarousel from "./CatCarousel";
 import Button from "./Button";
 import Link from "next/link";
 
-export default function CatDetails({ cats, cat, returnHref }) {
+export default function CatDetails({ cats, cat, returnHref, position, url }) {
   return (
     <div
-      className="fixed inset-0 bg-white grid gap-2 lg:grid-cols-2 lg:py-4 z-20 overflow-y-scroll"
-      style={{ backgroundColor: "rgb(245, 245, 245" }}
+      className={`${position} inset-0 bg-white grid gap-2 lg:grid-cols-2 lg:py-4 z-20 overflow-y-scroll`}
+      style={{ backgroundColor: "rgb(245, 245, 245)" }}
     >
       <CatCarousel cat={cat} />
       <div>
@@ -33,7 +33,7 @@ export default function CatDetails({ cats, cat, returnHref }) {
         <CatDesc>{cat.Description}</CatDesc>
         <div className="flex justify-center">
           <Link href={returnHref === undefined ? "/" : returnHref}>
-            <Button>Go Back</Button>
+            {url ? "" : <Button>Go Back</Button>}
           </Link>
           <a href={`https://www.shelterluv.com/matchme/adopt/VOKR-A-${cat.ID}`}>
             <Button primary>Adopt {cat.Name}!</Button>

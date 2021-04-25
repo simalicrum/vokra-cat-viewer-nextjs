@@ -31,9 +31,23 @@ const CatPage = ({ cats }) => {
   const router = useRouter();
   const { catId } = router.query;
   return (
-    <>
-      <CatDetails cat={cats.find((i) => i.ID === catId)} cats={cats} />
-    </>
+    <div className="w-full flex flex-col items-center">
+      <Header />
+      <div
+        className="w-full flex justify-center"
+        style={{ backgroundColor: "rgb(245, 245, 245)" }}
+      >
+        <div className="" style={{ width: "1200px" }}>
+          <CatDetails
+            cat={cats.find((i) => i.ID === catId)}
+            cats={cats}
+            position="static"
+            url
+          />
+        </div>
+      </div>
+      <Footer />
+    </div>
   );
 };
 
