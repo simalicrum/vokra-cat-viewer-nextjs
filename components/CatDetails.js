@@ -26,7 +26,7 @@ export default function CatDetails({ cats, cat, returnHref }) {
               : Math.floor(cat.Age / 12) + " years old"}
           </Subtitle>
           <Details>
-            {cat.Breed} {cat.Color} {cat.Pattern}
+            {cat.Breed} {cat.Color} {cat.Pattern === "None" ? "" : cat.Pattern}
           </Details>
         </CatHeader>
         <Attributes cats={cats} cat={cat} returnHref={returnHref} />

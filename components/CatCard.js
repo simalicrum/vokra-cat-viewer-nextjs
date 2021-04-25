@@ -10,7 +10,7 @@ export default function CatCard({ cat }) {
       <CatHeader>
         <Title>{cat.Name}</Title>
         <Subtitle>
-          {cat.Breed} {cat.Color} {cat.Pattern}
+          {cat.Breed} {cat.Color} {cat.Pattern === "None" ? "" : cat.Pattern}
         </Subtitle>
       </CatHeader>
       <CoverPhoto src={cat.CoverPhoto} />
