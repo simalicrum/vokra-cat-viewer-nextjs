@@ -88,6 +88,7 @@ export default function Cats({
         )
         .map((cat) => (
           <Link
+            key={cat.ID}
             href={makeContextualHref({ catId: cat.ID })}
             as={`/cat/${cat.ID}`}
           >
