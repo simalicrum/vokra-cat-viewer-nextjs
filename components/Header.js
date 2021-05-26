@@ -1,13 +1,13 @@
 export default function Header() {
   return (
     <header
-      className="flex justify-center items-center"
+      className="flex w-full justify-center items-center"
       style={{
         height: "112px",
       }}
     >
       <div
-        className="flex justify-between items-center"
+        className="flex justify-between items-center px-4"
         style={{ width: "1200px" }}
       >
         <a href="https://www.vokra.ca">
