@@ -45,7 +45,7 @@ export default function Cats({
     [router.query.catId];
   return (
     <div
-      className={`grid md:grid-cols-2 md:p-2 gap-2 top-44 md:top-24 ${catsDisplay}`}
+      className={`grid md:grid-cols-2 md:p-2 gap-2 top-44 md:top-24 overflow-y-auto ${catsDisplay}`}
       style={{ backgroundColor: "rgb(245, 245, 245" }}
     >
       {!!router.query.catId ? (

@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function CatDetails({ cats, cat, returnHref, position, url }) {
   return (
     <div
-      className={`${position} inset-0 bg-white grid gap-2 lg:grid-cols-2 lg:py-4 z-20 overflow-y-auto`}
+      className={`${position} inset-0 bg-white grid gap-2 lg:grid-cols-2 z-20 overflow-y-auto`}
       style={{ backgroundColor: "rgb(245, 245, 245)" }}
     >
       <CatCarousel cat={cat} />

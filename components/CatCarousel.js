@@ -3,7 +3,11 @@ import { Carousel } from "react-responsive-carousel";
 
 export default function CatCarousel({ cat }) {
   return (
-    <Carousel showThumbs={false} showIndicators={false}>
+    <Carousel
+      showThumbs={false}
+      showIndicators={false}
+      className="lg:py-4 lg:pl-4"
+    >
       {cat.Photos.map((photo, index) => (
         <div key={index}>
           <img src={photo}></img>
