@@ -62,21 +62,21 @@ export default function Cats({
         .filter(
           (cat) =>
             breeds === null ||
-            cat.Breed === (breeds !== null ? "Domestic " + breeds.value : "")
+            cat.Breed === ("Domestic " + breeds.value || "")
         )
         .filter(
           (cat) =>
             colors === null ||
-            cat.Color === (colors !== null ? colors.value : "")
+            cat.Color.includes(colors.value)
         )
         .filter(
           (cat) =>
             ages === null ||
-            convertAge(cat.Age) === (ages !== null ? ages.value : "")
+            convertAge(cat.Age) === ( ages.value || "")
         )
         .filter(
           (cat) =>
-            sexes === null || cat.Sex === (sexes !== null ? sexes.value : "")
+            sexes === null || cat.Sex === ( sexes.value || "")
         )
         .filter(
           (cat) =>
