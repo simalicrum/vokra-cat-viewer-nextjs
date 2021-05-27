@@ -25,6 +25,7 @@ export default function Attributes({ cats, cat }) {
                 )
                 .map((i) => (
                   <Link
+                    key={i.ID}
                     href={makeContextualHref({ catId: i.ID })}
                     as={`/cat/${i.ID}`}
                   >
