@@ -16,7 +16,9 @@
     "react-select": "^4.3.0"
   },
   "devDependencies": {
+    "@ijsto/eslint-config": "^4.1.6",
     "autoprefixer": "^10.2.5",
+    "eslint": "^7.27.0",
     "postcss": "^8.2.10",
     "tailwindcss": "^2.1.1"
   }

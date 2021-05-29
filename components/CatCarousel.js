@@ -1,5 +1,5 @@
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import { Carousel } from "react-responsive-carousel";
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 
 export default function CatCarousel({ cat }) {
   return (
@@ -10,18 +10,18 @@ export default function CatCarousel({ cat }) {
     >
       {cat.Photos.map((photo, index) => (
         <div key={index}>
-          <img src={photo}></img>
+          <img src={photo} />
         </div>
       ))}
-      {cat.Videos.map((video) => (
+      {cat.Videos.map(video => (
         <iframe
           className="h-full"
           src={video.EmbedUrl}
           title="YouTube video player"
-          frameborder="0"
+          frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
+          allowFullScreen
+        />
       ))}
     </Carousel>
   );

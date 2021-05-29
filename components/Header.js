@@ -3,19 +3,19 @@ export default function Header() {
     <header
       className="flex w-full justify-center items-center"
       style={{
-        height: "112px",
+        height: '112px',
       }}
     >
       <div
         className="flex justify-between items-center px-4"
-        style={{ width: "1200px" }}
+        style={{ width: '1200px' }}
       >
         <a href="https://www.vokra.ca">
           <img
             className=""
             style={{
-              maxWidth: "197px",
-              width: "100%",
+              maxWidth: '197px',
+              width: '100%',
             }}
             src="/20160408_VOKRA_workmark_black_PNG.png"
           />
