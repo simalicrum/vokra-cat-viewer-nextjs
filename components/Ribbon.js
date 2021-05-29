@@ -1,5 +1,3 @@
-export default function Ribbon({children}) {
-  return (
-    <div>{children}</div>
-  );
+export default function Ribbon({ children }) {
+  return <div>{children}</div>;
 }
