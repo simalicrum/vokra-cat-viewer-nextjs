@@ -6,7 +6,7 @@ import CatHeader from './CatHeader';
 
 export default function CatCard({ cat }) {
   return (
-    <div>
+    <div className="grid gap-4">
       <CatHeader>
         <Title>{cat.Name}</Title>
         <Subtitle>

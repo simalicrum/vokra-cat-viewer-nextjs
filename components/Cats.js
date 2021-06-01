@@ -40,12 +40,10 @@ export default function Cats({
     } else {
       setCatsDisplay('relative');
     }
-  }),
-    [router.query.catId];
+  }, [router.query.catId]);
   return (
     <div
-      className={`grid md:grid-cols-2 md:p-2 gap-2 top-44 md:top-24 overflow-y-auto ${catsDisplay}`}
-      style={{ backgroundColor: 'rgb(245, 245, 245' }}
+      className={`grid md:grid-cols-2 md:p-4 gap-6 top-48 md:top-24 overflow-y-auto ${catsDisplay}`}
     >
       {router.query.catId ? (
         <CatDetails
