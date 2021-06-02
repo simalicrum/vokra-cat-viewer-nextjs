@@ -12,7 +12,7 @@ export default function CoverPhoto({ src, cat }) {
       ) : (
         ''
       )}
-      <Image layout="responsive" width={100} height={100} src={src} />
+      <Image layout="responsive" width={1000} height={1000} src={src} />
     </div>
   );
 }
