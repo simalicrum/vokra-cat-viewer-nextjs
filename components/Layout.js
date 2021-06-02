@@ -10,7 +10,7 @@ export default function Layout({ cats }) {
   const [attributes, setAttributes] = useState([]);
   const [name, setName] = useState({ target: { value: '' } });
   return (
-    <div className="bg-vokra-gray">
+    <div>
       <Searchbar
         handleBreedChange={setBreeds}
         handleColorChange={setColors}
