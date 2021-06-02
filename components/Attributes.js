@@ -4,7 +4,7 @@ export default function Attributes({ cats, cat }) {
   const catBondedID = thing =>
     thing.PreviousIds.filter(i => i.Type === 'Visibility').map(i => i.IdValue);
   return (
-    <ul className="flex">
+    <ul className="flex flex-wrap">
       {cat.Attributes.filter(attribute => attribute.Publish === 'Yes').map(
         attribute => (
           <Attribute
