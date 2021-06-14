@@ -1,16 +1,14 @@
-import { fetchCats, sanitizeCats } from "../../lib/api";
-import { useRouter } from "next/router";
-import CatDetails from "../../components/CatDetails";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { useRouter } from 'next/router';
+import { fetchCats, sanitizeCats } from '../../lib/api';
+import CatDetails from '../../components/CatDetails';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 export async function getStaticPaths() {
   const dirtyCats = await fetchCats();
   const cats = await sanitizeCats(dirtyCats.animals);
   return {
-    paths: cats.map((i) => {
-      return { params: { catId: i.ID } };
-    }),
+    paths: cats.map(i => ({ params: { catId: i.ID } })),
     fallback: false,
   };
 }
@@ -33,13 +31,10 @@ const CatPage = ({ cats }) => {
   return (
     <div className="w-full flex flex-col items-center">
       <Header />
-      <div
-        className="w-full flex justify-center"
-        style={{ backgroundColor: "rgb(245, 245, 245)" }}
-      >
-        <div className="" style={{ width: "1200px" }}>
+      <div className="w-full flex justify-center bg-vokra-gray">
+        <div className="" style={{ width: '1200px' }}>
           <CatDetails
-            cat={cats.find((i) => i.ID === catId)}
+            cat={cats.find(i => i.ID === catId)}
             cats={cats}
             position="static"
             url

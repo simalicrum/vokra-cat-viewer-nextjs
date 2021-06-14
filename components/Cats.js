@@ -36,16 +36,13 @@ export default function Cats({
     );
   useEffect(() => {
     if (router.query.catId) {
-      setCatsDisplay('fixed z-20');
+      setCatsDisplay('hidden');
     } else {
-      setCatsDisplay('relative');
+      setCatsDisplay('absolute');
     }
   }, [router.query.catId]);
   return (
-    <div
-      className={`grid md:grid-cols-2 md:p-2 gap-2 top-44 md:top-24 overflow-y-auto ${catsDisplay}`}
-      style={{ backgroundColor: 'rgb(245, 245, 245' }}
-    >
+    <div>
       {router.query.catId ? (
         <CatDetails
           cats={cats}
@@ -56,35 +53,40 @@ export default function Cats({
       ) : (
         ''
       )}
-      {cats
-        .filter(
-          cat =>
-            breeds === null || cat.Breed === (`Domestic ${breeds.value}` || '')
-        )
-        .filter(cat => colors === null || cat.Color.includes(colors.value))
-        .filter(
-          cat => ages === null || convertAge(cat.Age) === (ages.value || '')
-        )
-        .filter(cat => sexes === null || cat.Sex === (sexes.value || ''))
-        .filter(
-          cat =>
-            attributes.length === 0 ||
-            (attributes !== null ? compareAttributes(cat.Attributes) : [])
-        )
-        .filter(cat =>
-          cat.Name.toLowerCase().includes(name.target.value.toLowerCase())
-        )
-        .map(cat => (
-          <Link
-            key={cat.ID}
-            href={makeContextualHref({ catId: cat.ID })}
-            as={`/cat/${cat.ID}`}
-          >
-            <a>
-              <CatCard cat={cat} key={cat.ID} />
-            </a>
-          </Link>
-        ))}
+      <div
+        className={`grid md:grid-cols-2 md:pt-28 pt-48 md:p-4 gap-6 overflow-y-auto ${catsDisplay} bg-vokra-gray`}
+      >
+        {cats
+          .filter(
+            cat =>
+              breeds === null ||
+              cat.Breed === (`Domestic ${breeds.value}` || '')
+          )
+          .filter(cat => colors === null || cat.Color.includes(colors.value))
+          .filter(
+            cat => ages === null || convertAge(cat.Age) === (ages.value || '')
+          )
+          .filter(cat => sexes === null || cat.Sex === (sexes.value || ''))
+          .filter(
+            cat =>
+              attributes.length === 0 ||
+              (attributes !== null ? compareAttributes(cat.Attributes) : [])
+          )
+          .filter(cat =>
+            cat.Name.toLowerCase().includes(name.target.value.toLowerCase())
+          )
+          .map(cat => (
+            <Link
+              key={cat.ID}
+              href={makeContextualHref({ catId: cat.ID })}
+              as={`/cat/${cat.ID}`}
+            >
+              <a>
+                <CatCard cat={cat} key={cat.ID} />
+              </a>
+            </Link>
+          ))}
+      </div>
     </div>
   );
 }
