@@ -9,7 +9,7 @@ export async function getStaticPaths() {
   const cats = await sanitizeCats(dirtyCats.animals);
   return {
     paths: cats.map(i => ({ params: { catId: i.ID } })),
-    fallback: false,
+    fallback: 'blocking',
   };
 }
 
