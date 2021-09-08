@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Alice&display=swap");
 
 .block-ellipsis {
   display: -webkit-box;
@@ -9,4 +9,14 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.h-main {
+  height: calc(100vh - 12rem);
+}
+
+@media (min-width: 786px) {
+  .h-main {
+    height: calc(100vh - 6rem);
+  }
 }
