@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import { useRouter } from 'next/router';
-import { useContextualRouting } from 'next-use-contextual-routing';
-import Link from 'next/link';
-import CatDetails from './CatDetails';
-import CatCard from './CatCard';
+import { useRouter } from "next/router";
+import { useContextualRouting } from "next-use-contextual-routing";
+import Link from "next/link";
+import CatDetails from "./CatDetails";
+import CatCard from "./CatCard";
 
 export default function Cats({
   cats,
@@ -17,65 +17,65 @@ export default function Cats({
 }) {
   const router = useRouter();
   const { makeContextualHref, returnHref } = useContextualRouting();
-  const [catsDisplay, setCatsDisplay] = useState('relative');
-  const convertAge = age => {
+  const [catsDisplay, setCatsDisplay] = useState("relative");
+  const convertAge = (age) => {
     if (age < 12) {
-      return 'Kitten (< 1 year)';
+      return "Kitten (< 1 year)";
     }
     if (age < 96) {
-      return 'Adult (1-8 years)';
+      return "Adult (1-8 years)";
     }
-    return 'Senior (8+ years)';
+    return "Senior (8+ years)";
   };
-  const compareAttributes = attributesParam =>
-    attributes.every(attribute =>
+  const compareAttributes = (attributesParam) =>
+    attributes.every((attribute) =>
       attributesParam
-        .filter(i => i.Publish === 'Yes')
-        .map(i => i.AttributeName)
+        .filter((i) => i.Publish === "Yes")
+        .map((i) => i.AttributeName)
         .includes(attribute.value)
     );
   useEffect(() => {
     if (router.query.catId) {
-      setCatsDisplay('hidden');
+      setCatsDisplay("hidden");
     } else {
-      setCatsDisplay('absolute');
+      setCatsDisplay("fixed");
     }
   }, [router.query.catId]);
   return (
-    <div>
+    <>
       {router.query.catId ? (
         <CatDetails
           cats={cats}
-          cat={cats.find(cat => cat.ID === router.query.catId)}
+          cat={cats.find((cat) => cat.ID === router.query.catId)}
           returnHref={returnHref}
           position="fixed"
         />
       ) : (
-        ''
+        ""
       )}
       <div
-        className={`grid md:grid-cols-2 md:pt-28 pt-48 md:p-4 gap-6 overflow-y-auto ${catsDisplay} bg-vokra-gray`}
+        className={`grid md:grid-cols-2 md:top-24 top-48 md:p-4 gap-6 overflow-y-scroll h-screen ${catsDisplay} bg-vokra-gray`}
       >
         {cats
           .filter(
-            cat =>
+            (cat) =>
               breeds === null ||
-              cat.Breed === (`Domestic ${breeds.value}` || '')
+              cat.Breed === (`Domestic ${breeds.value}` || "")
           )
-          .filter(cat => colors === null || cat.Color.includes(colors.value))
+          .filter((cat) => colors === null || cat.Color.includes(colors.value))
           .filter(
-            cat => ages === null || convertAge(cat.Age) === (ages.value || '')
+            (cat) => ages === null || convertAge(cat.Age) === (ages.value || "")
           )
-          .filter(cat => sexes === null || cat.Sex === (sexes.value || ''))
+          .filter((cat) => sexes === null || cat.Sex === (sexes.value || ""))
           .filter(
-            cat =>
+            (cat) =>
               attributes.length === 0 ||
               (attributes !== null ? compareAttributes(cat.Attributes) : [])
           )
-          .filter(cat =>
+          .filter((cat) =>
             cat.Name.toLowerCase().includes(name.target.value.toLowerCase())
           )
-          .map(cat => (
+          .map((cat) => (
             <Link
               key={cat.ID}
               href={makeContextualHref({ catId: cat.ID })}
@@ -87,6 +87,6 @@ export default function Cats({
             </Link>
           ))}
       </div>
-    </div>
+    </>
   );
 }

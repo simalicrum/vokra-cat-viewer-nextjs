@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import Searchbar from './Searchbar';
-import Cats from './Cats';
+import { useState } from "react";
+import Searchbar from "./Searchbar";
+import Cats from "./Cats";
 
 export default function Layout({ cats }) {
   const [breeds, setBreeds] = useState(null);
@@ -8,9 +8,9 @@ export default function Layout({ cats }) {
   const [ages, setAges] = useState(null);
   const [sexes, setSexes] = useState(null);
   const [attributes, setAttributes] = useState([]);
-  const [name, setName] = useState({ target: { value: '' } });
+  const [name, setName] = useState({ target: { value: "" } });
   return (
-    <div>
+    <>
       <Searchbar
         handleBreedChange={setBreeds}
         handleColorChange={setColors}
@@ -28,6 +28,6 @@ export default function Layout({ cats }) {
         attributes={attributes}
         name={name}
       />
-    </div>
+    </>
   );
 }
