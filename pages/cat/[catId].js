@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { fetchCats, sanitizeCats } from "../../lib/api";
-import FETCH_URL from "../config/api";
+import FETCH_URL from "../../config/api";
 import CatDetails from "../../components/CatDetails";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
