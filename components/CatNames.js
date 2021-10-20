@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 export default function CatNames({ cats }) {
   const [nameFilter, setNameFilter] = useState('');
-  const [skipTemporary, setSkipTemporary] = useState(false);
 
   const uniqueNames = [...new Set(cats.map(({ Name }) => Name))];
   const lowercaseNameFilter = nameFilter.toLowerCase();
@@ -15,11 +14,8 @@ export default function CatNames({ cats }) {
       };
     })
     .filter(({ name, lowercaseName }) => {
-      if (name.match(/test|training|practice/i)) {
-        return false; // always skip test cats
-      }
-      if (skipTemporary && name.match(/[0-9]/i)) {
-        return false;
+      if (name.match(/test|training|practice|[0-9]/i)) {
+        return false; // always skip test cats and temporary names
       }
       if (nameFilter && !lowercaseName.includes(lowercaseNameFilter)) {
         return false;
@@ -34,26 +30,15 @@ export default function CatNames({ cats }) {
 
   return (
     <div className="p-4">
-      <div className="flex">
-        <div className="m-4 flex-1">
-          <input
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="nameFilterInput"
-            type="search"
-            value={nameFilter}
-            onChange={(e) => setNameFilter(e.target.value.trim())}
-            placeholder="Type to search..."
-          />
-        </div>
-        <div className="m-4 flex-1 self-center">
-          <input
-            id="skipTemporaryNames"
-            type="checkbox"
-            checked={skipTemporary}
-            onChange={(e) => setSkipTemporary(e.target.checked)}
-          />{' '}
-          <label htmlFor="skipTemporaryNames">Skip temporary names</label>
-        </div>
+      <div className="m-4">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="nameFilterInput"
+          type="search"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value.trim())}
+          placeholder="Type to search..."
+        />
       </div>
       <hr />
       {namesToRender.length > 0 ? (
