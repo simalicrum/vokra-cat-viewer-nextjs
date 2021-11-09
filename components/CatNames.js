@@ -14,8 +14,11 @@ export default function CatNames({ cats }) {
       };
     })
     .filter(({ name, lowercaseName }) => {
-      if (name.match(/test|training|practice|[0-9]/i)) {
+      if (name.match(/test|training|practice/i)) {
         return false; // always skip test cats and temporary names
+      }
+      if (name.match(/ [A-R|T-Z]+[0-9]/i)) {
+        return false; // skip intake names with tags like A1, K1 (but not S1 or SK1)
       }
       if (nameFilter && !lowercaseName.includes(lowercaseNameFilter)) {
         return false;
