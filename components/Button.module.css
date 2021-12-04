@@ -1,5 +1,5 @@
 .primary {
-  box-shadow: rgb(129, 75, 210) 0px 2px 0px 0px;
+  box-shadow: rgb(129, 75, 210) 0 2px 0 0;
   background-color: #986cda;
   border-color: #986cda;
   border-radius: 300px;
@@ -9,7 +9,7 @@
   font-style: normal;
   font-size: 14.25px;
   text-transform: none;
-  letter-spacing: 0em;
+  letter-spacing: 0;
   color: #eef7ef;
   display: inline-block;
   width: auto;
@@ -35,7 +35,7 @@
   font-weight: 400;
   font-style: normal;
   font-size: 14.25px;
-  letter-spacing: 0em;
+  letter-spacing: 0;
   padding: 12px 18px;
   margin: 0.618em 0.45em;
   transition: background-color 170ms ease-out, color 170ms ease-out;
