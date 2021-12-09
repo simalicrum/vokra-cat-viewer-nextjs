@@ -11,7 +11,6 @@ export async function getStaticPaths() {
       cats = res[0].concat(res[1]);
     }
   );
-
   return {
     paths: cats.map((cat) => ({
       params: {
@@ -30,6 +29,7 @@ export async function getStaticProps({ params }) {
     }
   );
   const cat = cats.find((c) => params.catId === c["Internal-ID"]);
+  console.log("getStaticProps render: ", cat["Internal-ID"]);
   return {
     props: {
       cats: cats,
