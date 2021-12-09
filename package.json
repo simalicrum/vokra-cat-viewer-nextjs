@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_PLUGIN_QUERY_CACHE_ACTIVE=true next build",
     "start": "next start"
   },
   "dependencies": {
     "is-regex": "^1.1.4",
-    "next": "^12.0.7",
+    "next": "^10.2.3",
+    "next-plugin-query-cache": "^2.0.1",
     "next-use-contextual-routing": "^2.0.0",
     "prettier": "^2.5.1",
     "react": "17.0.2",
