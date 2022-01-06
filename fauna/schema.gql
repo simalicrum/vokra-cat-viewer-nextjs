@@ -167,10 +167,6 @@ type Query {
   findCatByInternalId(InternalID: String): Cat
   findCatsByInternalIds(InternalIDs: [String]): [Cat]
     @resolver(name: "get_cat_internal_ids")
-  findCatsByAttributesAny(Attributes: [AttributeInput!]): [Cat]
-    @resolver(name: "get_cat_attributes_any")
-  findCatsByAttributesAll(Attributes: [AttributeInput!]): [Cat]
-    @resolver(name: "get_cat_attributes_all")
   findCatsByStatus(Status: String): [Cat]
   findCatsByStatuses(Statuses: [String]): [Cat]
     @resolver(name: "get_cats_by_statuses")
