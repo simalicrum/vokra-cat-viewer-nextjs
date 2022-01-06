@@ -11,10 +11,11 @@ type PreviousId @embedded {
   Type: String
 }
 
-type Attribute @embedded {
+type Attribute {
   AttributeName: String
   Publish: String
   InternalID: String
+  Cat: Cat
 }
 
 type Location @embedded {
@@ -72,94 +73,7 @@ type Cat {
   LastIntakeUnixTime: String
   LastUpdatedUnixTime: String
   Microchips: [Microchip]
-  Attributes: [Attribute]
-}
-
-input PersonInput @embedded {
-  FirstName: String
-  LastName: String
-  OutDateUnixTime: String
-  RelationshipType: String
-}
-
-input PreviousIdInput @embedded {
-  IdValue: String
-  IssuingShelter: String
-  Type: String
-}
-
-input AttributeInput @embedded {
-  AttributeName: String
-  Publish: String
-  InternalID: String
-}
-
-input LocationInput @embedded {
-  Tier1: String
-  Tier2: String
-  Tier3: String
-}
-
-input MicrochipInput @embedded {
-  Id: String
-  Issuer: String
-  ImplantUnixTime: String
-}
-
-input AdoptionFeeGroupInput @embedded {
-  Id: String
-  Name: String
-  Price: String
-  Discount: Float
-  Tax: Int
-}
-
-input VideoInput @embedded {
-  VideoId: String
-  EmbedUrl: String
-  YoutubeUrl: String
-  ThumbUrl: String
-}
-
-input CatInput {
-  Name: String
-  ID: String
-  InternalID: String
-  LitterGroupId: String
-  Type: String
-  CurrentLocation: LocationInput
-  Sex: String
-  Status: String
-  InFoster: Boolean
-  AssociatedPerson: PersonInput
-  CurrentWeightPounds: String
-  Size: String
-  Altered: String
-  DOBUnixTime: Int
-  Age: Int
-  CoverPhoto: String
-  Photos: [String]
-  Videos: [VideoInput]
-  Breed: String
-  Color: String
-  Pattern: String
-  AdoptionFeeGroup: AdoptionFeeGroupInput
-  Description: String
-  PreviousIds: [PreviousIdInput]
-  LastIntakeUnixTime: String
-  LastUpdatedUnixTime: String
-  Microchips: [MicrochipInput]
-  Attributes: [AttributeInput]
-}
-
-type CatUpdate {
-  Cat: Cat
-  InternalID: String
-}
-
-input CatUpdateInput {
-  Cat: CatInput
-  InternalID: String
+  Attributes: [Attribute] @relation
 }
 
 type Query {
@@ -173,15 +87,6 @@ type Query {
   allEvents: [Event!]
   getLatestEventTimestamp: Int @resolver(name: "get_latest_event_timestamp")
 }
-
-type Mutation {
-  createCats(Cats: [CatInput]!): [Cat] @resolver(name: "create_cats")
-  updateCatByInternalId(InternalID: String, updatedCat: CatInput): Cat
-    @resolver(name: "update_cat_internal_id")
-  updateCatsByInternalIds(Cats: [CatUpdateInput]): [Cat]
-    @resolver(name: "update_cats_internal_ids")
-}
-
 type Error @embedded {
   type: String
   cat: String

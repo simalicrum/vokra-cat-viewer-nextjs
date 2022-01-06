@@ -1,7 +1,7 @@
 import { fetchCats } from "../../../../lib/api";
 import {
-  createCats,
-  updateCats,
+  createCat,
+  updateCat,
   getInternalIds,
   createEvent,
   getLatestEventTimestamp,
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
                 Publish: element.Publish,
               };
             });
-            cat.Attributes = fixedAttributes;
+            cat.Attributes = { create: fixedAttributes };
           }
           if (cat.CurrentLocation === null) {
             delete cat.CurrentLocation;
@@ -49,11 +49,10 @@ export default async function handler(req, res) {
         const foundResp = await getInternalIds(internalIds).catch((error) =>
           console.error(error)
         );
-
-        const found = new Set();
+        const found = new Map();
 
         foundResp.findCatsByInternalIds.forEach((element) =>
-          found.add(element.InternalID)
+          found.set(element.InternalID, element._id)
         );
 
         const creates = [];
@@ -61,20 +60,21 @@ export default async function handler(req, res) {
 
         for (let i = 0; i < cats.length; i++) {
           if (found.has(cats[i].InternalID)) {
-            updates.push({ InternalID: cats[i].InternalID, Cat: cats[i] });
+            updates.push({
+              id: found.get(cats[i].InternalID),
+              input: cats[i],
+            });
           } else {
             creates.push(cats[i]);
           }
         }
 
-        const batchSize = 200;
         let promises = [];
-
-        for (let i = 0; i < creates.length; i += batchSize) {
-          promises.push(createCats(creates.slice(i, i + batchSize)));
+        for (let i = 0; i < creates.length; i++) {
+          promises.push(createCat(creates[i]));
         }
-        for (let i = 0; i < updates.length; i += batchSize) {
-          promises.push(updateCats(updates.slice(i, i + batchSize)));
+        for (let i = 0; i < updates.length; i++) {
+          promises.push(updateCat(updates[i].id, updates[i].input));
         }
 
         let errors = [];
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
           if (resp) {
             for (let element of resp) {
               if (element.status === "fulfilled") {
-                successes += batch.length;
+                successes++;
               } else {
                 errors.push({
                   type: "gql",
