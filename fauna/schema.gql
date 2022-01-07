@@ -15,7 +15,7 @@ type Attribute {
   AttributeName: String
   Publish: String
   InternalID: String
-  Cat: Cat
+  Cat: Cat @relation
 }
 
 type Location @embedded {
@@ -87,6 +87,12 @@ type Query {
   allEvents: [Event!]
   getLatestEventTimestamp: Int @resolver(name: "get_latest_event_timestamp")
 }
+
+type Mutation {
+  deleteAttributesByCat(ID: String): [Attribute]
+    @resolver(name: "delete_attributes_by_cat")
+}
+
 type Error @embedded {
   type: String
   cat: String
@@ -99,5 +105,6 @@ type Event {
   endTime: Int
   tries: Int
   successes: Int
+  attributesDeleted: Int
   errors: [Error]
 }
