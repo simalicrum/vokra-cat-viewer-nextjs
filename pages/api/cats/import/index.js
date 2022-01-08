@@ -29,8 +29,6 @@ export default async function handler(req, res) {
 
         const internalIds = cats.map((element) => element["Internal-ID"]);
 
-        var attributesAdded = 0;
-
         for (let cat of cats) {
           delete Object.assign(cat, { ["InternalID"]: cat["Internal-ID"] })[
             "Internal-ID"
@@ -43,14 +41,12 @@ export default async function handler(req, res) {
                 Publish: element.Publish,
               };
             });
-            attributesAdded += fixedAttributes.length;
             cat.Attributes = { create: fixedAttributes };
           }
           if (cat.CurrentLocation === null) {
             delete cat.CurrentLocation;
           }
         }
-        console.log("attributesAdded: ", attributesAdded);
         const foundResp = await getInternalIds(internalIds).catch((error) =>
           console.error(error)
         );
@@ -89,30 +85,6 @@ export default async function handler(req, res) {
 
         let errors = [];
         let successes = 0;
-        let attributesDeleted = 0;
-
-        for (let i = 0; i < deletePromises.length; i += 100) {
-          const batch = deletePromises.slice(i, i + 100);
-          const resp = await Promise.allSettled(batch).catch((error) => {
-            errors.push({
-              type: "promise",
-              content: JSON.stringify(error),
-            });
-            console.error(error);
-          });
-          if (resp) {
-            for (let element of resp) {
-              if (element.status === "fulfilled") {
-                attributesDeleted += element.value.deleteAttributesByCat.length;
-              } else {
-                errors.push({
-                  type: "gql",
-                  content: JSON.stringify(element.reason),
-                });
-              }
-            }
-          }
-        }
 
         for (let i = 0; i < promises.length; i += 100) {
           const batch = promises.slice(i, i + 100);
@@ -142,7 +114,6 @@ export default async function handler(req, res) {
           endTime: Math.floor(Date.now() / 1000),
           tries: cats.length,
           successes,
-          attributesDeleted,
           errors,
         });
         res.status(200).json(respEvent.createEvent);
