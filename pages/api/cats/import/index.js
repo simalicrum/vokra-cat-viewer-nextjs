@@ -81,8 +81,8 @@ export default async function handler(req, res) {
         for (let i = 0; i < deletes.length; i += 800) {
           const promises = [];
 
-          for (let j = i; j < i + 800 && j < deletes.length; j++) {
-            promises.push(deleteAttributesByCats([deletes[j]]));
+          for (let j = i; j < i + 800 && j < deletes.length; j += 100) {
+            promises.push(deleteAttributesByCats(deletes.slice(j, j + 100)));
           }
           console.time("delete resp" + i);
           const resp = await Promise.allSettled(promises).catch((error) => {
