@@ -105,5 +105,6 @@ type Event {
   endTime: Int
   tries: Int
   successes: Int
+  attributesDeleted: Int
   errors: [Error]
 }
