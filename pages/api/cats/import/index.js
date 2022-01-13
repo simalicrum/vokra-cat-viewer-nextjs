@@ -1,13 +1,12 @@
 import { fetchCats } from "../../../../lib/api";
+import { createEvent, getLatestEventTimestamp } from "../../../../lib/fauna";
 import {
-  createCat,
-  updateCat,
-  deleteAttributesByCat,
-  deleteAttributesByCats,
+  createCats,
   getInternalIds,
-  createEvent,
-  getLatestEventTimestamp,
-} from "../../../../lib/fauna";
+  getArrayIds,
+  deleteMicrochips,
+} from "../../../../lib/dgraph";
+
 import FETCH_URL from "../../../../config/api";
 
 export default async function handler(req, res) {
@@ -35,6 +34,7 @@ export default async function handler(req, res) {
           delete Object.assign(cat, { ["InternalID"]: cat["Internal-ID"] })[
             "Internal-ID"
           ];
+          delete Object.assign(cat, { ["Id"]: cat["ID"] })["ID"];
           if (cat.Attributes) {
             const fixedAttributes = cat.Attributes.map((element) => {
               return {
@@ -43,77 +43,52 @@ export default async function handler(req, res) {
                 Publish: element.Publish,
               };
             });
-            cat.Attributes = { create: fixedAttributes };
+            cat.Attributes = fixedAttributes;
           }
           if (cat.CurrentLocation === null) {
             delete cat.CurrentLocation;
           }
         }
-        console.time("getInternalIds");
+
         const foundResp = await getInternalIds(internalIds).catch((error) =>
           console.error(error)
         );
-        const found = new Map();
 
-        foundResp.findCatsByInternalIds.forEach((element) =>
-          found.set(element.InternalID, element._id)
-        );
-        console.timeEnd("getInternalIds");
-        const deletes = [];
+        const arrayIds = await getArrayIds(
+          foundResp.queryCat.map((element) => element.InternalID)
+        ).catch((error) => console.error(error));
+
+        const previousIds = [];
+        const microchips = [];
+
+        for (let i = 0; i < arrayIds.queryCat.length; i++) {
+          const previousIdsIds = arrayIds.queryCat[i].PreviousIds.map(
+            (element) => element.id
+          );
+          const microchipIds = arrayIds.queryCat[i].Microchips.map(
+            (element) => element.id
+          );
+          previousIds.push(...previousIdsIds);
+          microchips.push(...microchipIds);
+        }
+
         const creates = [];
-        const updates = [];
 
         for (let i = 0; i < cats.length; i++) {
-          if (found.has(cats[i].InternalID)) {
-            updates.push({
-              id: found.get(cats[i].InternalID),
-              input: cats[i],
-            });
-            deletes.push(found.get(cats[i].InternalID));
-          } else {
-            creates.push(cats[i]);
-          }
+          creates.push(cats[i]);
         }
 
         const errors = [];
         let attributesDeleted = 0;
-        console.time("deleteAttributesByCat");
-        for (let i = 0; i < deletes.length; i += 800) {
-          const promises = [];
 
-          for (let j = i; j < i + 800 && j < deletes.length; j += 100) {
-            promises.push(deleteAttributesByCats(deletes.slice(j, j + 100)));
-          }
-          console.time("delete resp" + i);
-          const resp = await Promise.allSettled(promises).catch((error) => {
-            errors.push({
-              type: "promise",
-              content: JSON.stringify(error),
-            });
-            console.error(error);
-          });
-          console.timeEnd("delete resp" + i);
-          if (resp) {
-            for (let element of resp) {
-              if (element.status === "fulfilled") {
-                attributesDeleted++;
-              } else {
-                errors.push({
-                  type: "gql",
-                  content: JSON.stringify(element.reason),
-                });
-              }
-            }
-          }
-        }
-        console.timeEnd("deleteAttributesByCat");
         let successes = 0;
-        console.time("createCat");
-        for (let i = 0; i < creates.length; i += 800) {
+
+        console.time("deleteMicrochips");
+        for (let i = 0; i < microchips.length; i += 800) {
           const promises = [];
 
-          for (let j = i; j < i + 800 && j < creates.length; j++) {
-            promises.push(createCat(creates[j]));
+          for (let j = i; j < i + 800 && j < microchips.length; j += 200) {
+            promises.push(deleteMicrochips(microchips.slice(j, j + 200)));
           }
           const resp = await Promise.allSettled(promises).catch((error) => {
             errors.push({
@@ -128,7 +103,95 @@ export default async function handler(req, res) {
                 successes++;
               } else {
                 errors.push({
-                  type: "gql",
+                  type: "gql deleteMicrochips",
+                  content: JSON.stringify(element.reason),
+                });
+              }
+            }
+          }
+        }
+        console.timeEnd("deleteMicrochips");
+
+        console.time("deletePreviousIds");
+        for (let i = 0; i < previousIds.length; i += 800) {
+          const promises = [];
+
+          for (let j = i; j < i + 800 && j < previousIds.length; j += 200) {
+            promises.push(deleteMicrochips(previousIds.slice(j, j + 200)));
+          }
+          const resp = await Promise.allSettled(promises).catch((error) => {
+            errors.push({
+              type: "promise",
+              content: JSON.stringify(error),
+            });
+            console.error(error);
+          });
+          if (resp) {
+            for (let element of resp) {
+              if (element.status === "fulfilled") {
+                successes++;
+              } else {
+                errors.push({
+                  type: "gql deletePreviousIds",
+                  content: JSON.stringify(element.reason),
+                });
+              }
+            }
+          }
+        }
+        console.timeEnd("deletePreviousIds");
+
+        const catIds = console.time("deleteCats");
+        for (let i = 0; i < arrayIds.length; i += 800) {
+          const promises = [];
+
+          for (let j = i; j < i + 800 && j < arrayIds.length; j += 200) {
+            promises.push(deleteCats(arrayIds.slice(j, j + 200)));
+          }
+          const resp = await Promise.allSettled(promises).catch((error) => {
+            errors.push({
+              type: "promise",
+              content: JSON.stringify(error),
+            });
+            console.error(error);
+          });
+          if (resp) {
+            for (let element of resp) {
+              if (element.status === "fulfilled") {
+                successes++;
+              } else {
+                errors.push({
+                  type: "gql deleteCats",
+                  content: JSON.stringify(element.reason),
+                });
+              }
+            }
+          }
+        }
+        console.timeEnd("deleteCats");
+
+        console.time("createCat");
+        for (let i = 0; i < creates.length; i += 400) {
+          const promises = [];
+
+          for (let j = i; j < i + 400 && j < creates.length; j += 200) {
+            promises.push(createCats(creates.slice(j, j + 200)));
+          }
+
+          const resp = await Promise.allSettled(promises).catch((error) => {
+            errors.push({
+              type: "promise",
+              content: JSON.stringify(error),
+            });
+            console.error(error);
+          });
+          if (resp) {
+            for (let element of resp) {
+              if (element.status === "fulfilled") {
+                successes++;
+              } else {
+                errors.push({
+                  type: "gql createCats",
                   content: JSON.stringify(element.reason),
                 });
               }
@@ -136,34 +199,6 @@ export default async function handler(req, res) {
           }
         }
         console.timeEnd("createCat");
-        console.time("updateCat");
-        for (let i = 0; i < updates.length; i += 800) {
-          const promises = [];
-
-          for (let j = i; j < i + 800 && j < updates.length; j++) {
-            promises.push(updateCat(updates[j].id, updates[j].input));
-          }
-          const resp = await Promise.allSettled(promises).catch((error) => {
-            errors.push({
-              type: "promise",
-              content: JSON.stringify(error),
-            });
-            console.error(error);
-          });
-          if (resp) {
-            for (let element of resp) {
-              if (element.status === "fulfilled") {
-                successes++;
-              } else {
-                errors.push({
-                  type: "gql",
-                  content: JSON.stringify(element.reason),
-                });
-              }
-            }
-          }
-        }
-        console.timeEnd("updateCat");
         const respEvent = await createEvent({
           since,
           startTime,

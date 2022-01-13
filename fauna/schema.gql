@@ -76,6 +76,96 @@ type Cat {
   Attributes: [Attribute] @relation
 }
 
+input PersonInput @embedded {
+  FirstName: String
+  LastName: String
+  OutDateUnixTime: String
+  RelationshipType: String
+}
+
+input PreviousIdInput @embedded {
+  IdValue: String
+  IssuingShelter: String
+  Type: String
+}
+
+input AttributeInput {
+  AttributeName: String
+  Publish: String
+  InternalID: String
+  Cat: CatInput @relation
+}
+
+input LocationInput @embedded {
+  Tier1: String
+  Tier2: String
+  Tier3: String
+}
+
+input MicrochipInput @embedded {
+  Id: String
+  Issuer: String
+  ImplantUnixTime: String
+}
+
+input AdoptionFeeGroupInput @embedded {
+  Id: String
+  Name: String
+  Price: String
+  Discount: Float
+  Tax: Int
+}
+
+input VideoInput @embedded {
+  VideoId: String
+  EmbedUrl: String
+  YoutubeUrl: String
+  ThumbUrl: String
+}
+
+# Allow manipulating the relationship between the types 'Cat' and 'Attribute'.
+input CatAttributesRelation {
+  # Create one or more documents of type 'Attribute' and associate them with the current document.
+  create: [AttributeInput]
+
+  # Connect one or more documents of type 'Attribute' with the current document using their IDs.
+  connect: [ID]
+
+  # Disconnect the given documents of type 'Attribute' from the current document using their IDs.
+  disconnect: [ID]
+}
+
+input CatInput {
+  Name: String
+  ID: String
+  InternalID: String
+  LitterGroupId: String
+  Type: String
+  CurrentLocation: LocationInput
+  Sex: String
+  Status: String
+  InFoster: Boolean
+  AssociatedPerson: PersonInput
+  CurrentWeightPounds: String
+  Size: String
+  Altered: String
+  DOBUnixTime: Int
+  Age: Int
+  CoverPhoto: String
+  Photos: [String]
+  Videos: [VideoInput]
+  Breed: String
+  Color: String
+  Pattern: String
+  AdoptionFeeGroup: AdoptionFeeGroupInput
+  Description: String
+  PreviousIds: [PreviousIdInput]
+  LastIntakeUnixTime: String
+  LastUpdatedUnixTime: String
+  Microchips: [MicrochipInput]
+  Attributes: CatAttributesRelation @relation
+}
+
 type Query {
   allCats: [Cat!]
   findCatByInternalId(InternalID: String): Cat
@@ -91,6 +181,8 @@ type Query {
 type Mutation {
   deleteAttributesByCat(ID: String): [Attribute]
     @resolver(name: "delete_attributes_by_cat")
+  createCats(cats: [CatInput]): [Cat] @resolver(name: "create_cats")
+  updateCats(cats: [CatInput]): [Cat] @resolver(name: "update_cats")
 }
 
 type Error @embedded {
