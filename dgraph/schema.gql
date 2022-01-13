@@ -1,0 +1,84 @@
+type Person {
+  id: ID!
+  FirstName: String
+  LastName: String
+  OutDateUnixTime: String
+  RelationshipType: String
+  Cat: Cat
+}
+
+type PreviousId {
+  id: ID!
+  IdValue: String
+  IssuingShelter: String
+  Type: String
+  Cat: Cat
+}
+
+type Attribute {
+  AttributeName: String
+  Publish: String
+  InternalID: String! @id @search(by: [fulltext])
+}
+
+type Location {
+  Tier1: String
+  Tier2: String
+  Tier3: String
+}
+
+type Microchip {
+  id: ID!
+  Id: String
+  Issuer: String
+  ImplantUnixTime: String
+  Cat: Cat
+}
+
+type AdoptionFeeGroup {
+  Id: String
+  Name: String
+  Price: String
+  Discount: Float
+  Tax: Int
+}
+
+type Video {
+  VideoId: String
+  EmbedUrl: String
+  YoutubeUrl: String
+  ThumbUrl: String
+  Cat: Cat
+}
+
+type Cat {
+  id: ID!
+  Name: String
+  Id: String
+  InternalID: String! @id @search(by: [fulltext])
+  LitterGroupId: String
+  Type: String
+  CurrentLocation: Location
+  Sex: String
+  Status: String
+  InFoster: Boolean
+  AssociatedPerson: Person @hasInverse(field: "Cat")
+  CurrentWeightPounds: String
+  Size: String
+  Altered: String
+  DOBUnixTime: Int
+  Age: Int
+  CoverPhoto: String
+  Photos: [String]
+  Videos: [Video] @hasInverse(field: "Cat")
+  Breed: String
+  Color: String
+  Pattern: String
+  AdoptionFeeGroup: AdoptionFeeGroup
+  Description: String
+  PreviousIds: [PreviousId] @hasInverse(field: "Cat")
+  LastIntakeUnixTime: String
+  LastUpdatedUnixTime: String
+  Microchips: [Microchip] @hasInverse(field: "Cat")
+  Attributes: [Attribute]
+}

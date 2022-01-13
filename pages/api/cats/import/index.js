@@ -60,6 +60,8 @@ export default async function handler(req, res) {
 
         const previousIds = [];
         const microchips = [];
+        const person = [];
+        const videos = [];
 
         for (let i = 0; i < arrayIds.queryCat.length; i++) {
           const previousIdsIds = arrayIds.queryCat[i].PreviousIds.map(
@@ -68,8 +70,16 @@ export default async function handler(req, res) {
           const microchipIds = arrayIds.queryCat[i].Microchips.map(
             (element) => element.id
           );
+          const personIds = arrayIds.queryCat[i].PreviousIds.map(
+            (element) => element.id
+          );
+          const videosIds = arrayIds.queryCat[i].Microchips.map(
+            (element) => element.id
+          );
           previousIds.push(...previousIdsIds);
           microchips.push(...microchipIds);
+          person.push(...personIds);
+          videos.push(...videosIds);
         }
 
         const errors = [];
@@ -90,6 +100,10 @@ export default async function handler(req, res) {
           200,
           4
         );
+
+        const personIdsResp = batchedQueries(person, deletePersons, 200, 4);
+
+        const videosResp = batchedQueries(videos, deleteVideos, 200, 4);
 
         const createCatsResp = batchedQueries(cats, createCats, 200, 4);
 
