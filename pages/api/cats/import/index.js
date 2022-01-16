@@ -4,11 +4,12 @@ import {
   createCats,
   getInternalIds,
   getArrayIds,
-  deleteCatEdges,
   deleteMicrochips,
   deletePreviousIds,
-  deletePersons,
   deleteVideos,
+  deleteCatLocation,
+  deleteCatAdoptionFeeGroup,
+  deleteCatAttributes,
   batchedQueries,
 } from "../../../../lib/dgraph";
 
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
     } else {
       if (req.headers.action_key === process.env.APP_KEY) {
         const startTime = Math.floor(Date.now() / 1000);
-
+        console.time("Shelterluv fetch");
         let since;
         if (req.body.since) {
           since = req.body.since;
@@ -53,16 +54,21 @@ export default async function handler(req, res) {
           }
           delete cat.AssociatedPerson;
         }
-
+        console.timeEnd("Shelterluv fetch");
+        console.time("getInternalIds");
         const foundResp = await getInternalIds(internalIds).catch((error) =>
           console.error(error)
         );
-
+        console.timeEnd("getInternalIds");
+        console.time("foundResp.queryCat");
         const found = foundResp.queryCat.map((element) => element.InternalID);
-
+        console.timeEnd("foundResp.queryCat");
+        console.time("getArrayIds");
         const arrayIds = await getArrayIds([""].concat(found)).catch((error) =>
           console.error(error)
         );
+        console.timeEnd("getArrayIds");
+        // Find and remove one-to-one nodes from [Cat]
 
         const previousIds = [];
         const microchips = [];
@@ -88,6 +94,9 @@ export default async function handler(req, res) {
 
         let successes = 0;
 
+        // Remove one-to-one nodes from [Cat]
+        console.time("one-to-one");
+
         const deletePreviousIdsResp = await batchedQueries(
           previousIds,
           deletePreviousIds,
@@ -103,9 +112,37 @@ export default async function handler(req, res) {
         );
 
         const videosResp = await batchedQueries(videos, deleteVideos, 100, 1);
+        console.timeEnd("one-to-one");
 
+        // Remove one-to-many Cat nodes from Location and AdoptionFeeGroup
+        console.time("one-to-many");
+        const deleteCatLocationResp = await batchedQueries(
+          foundResp,
+          deleteCatLocation,
+          100,
+          1
+        );
+
+        const deleteCatAdoptionFeeGroupResp = await batchedQueries(
+          foundResp,
+          deleteCatAdoptionFeeGroup,
+          100,
+          1
+        );
+        console.timeEnd("one-to-many");
+        // Remove many-to-many Cat nodes from Attributes
+        console.time("many-to-many");
+        const deleteCatAttributesResp = await batchedQueries(
+          foundResp,
+          deleteCatAttributes,
+          100,
+          1
+        );
+        console.timeEnd("many-to-many");
+        // createCat mutation re-creates relationships from nested objects
+        console.time("createCats");
         const createCatsResp = await batchedQueries(cats, createCats, 100, 1);
-
+        console.timeEnd("createCats");
         const respEvent = await createEvent({
           since,
           startTime,
