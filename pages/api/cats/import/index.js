@@ -52,6 +52,13 @@ export default async function handler(req, res) {
           }
           if (cat.CurrentLocation === null) {
             delete cat.CurrentLocation;
+          } else {
+            if (cat.CurrentLocation) {
+              cat.CurrentLocation.id = cat.CurrentLocation.Tier1;
+              if (cat.CurrentLocation.Tier2) {
+                cat.CurrentLocation.id += cat.CurrentLocation.Tier2;
+              }
+            }
           }
           delete cat.AssociatedPerson;
         }

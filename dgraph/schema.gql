@@ -14,8 +14,9 @@ type Attribute {
 }
 
 type Location {
+  id: String! @id
   Tier1: String
-  Tier2: String! @id
+  Tier2: String
   Cats: [Cat]
 }
 
@@ -42,13 +43,13 @@ type Video {
   EmbedUrl: String
   YoutubeUrl: String
   ThumbUrl: String
-  Cat: Cat
+  Cats: [Cat]
 }
 
 type Cat {
   id: ID!
-  Name: String
   Id: String
+  Name: String
   InternalID: String! @id @search(by: [fulltext])
   LitterGroupId: String
   Type: String
@@ -63,7 +64,7 @@ type Cat {
   Age: Int
   CoverPhoto: String
   Photos: [String]
-  Videos: [Video] @hasInverse(field: "Cat")
+  Videos: [Video] @hasInverse(field: "Cats")
   Breed: String
   Color: String
   Pattern: String
@@ -105,10 +106,12 @@ type Error {
 }
 
 type ImportEvent {
+  endpoint: String
   since: Int
   startTime: Int
   endTime: Int
-  tries: Int
+  imports: Int
+  removals: Int
   successes: Int
   errors: [Error]
 }
