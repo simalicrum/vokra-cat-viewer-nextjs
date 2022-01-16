@@ -11,6 +11,7 @@ import {
   deleteCatAdoptionFeeGroup,
   deleteCatAttributes,
   batchedQueries,
+  addImportEvent,
 } from "../../../../lib/dgraph";
 
 import FETCH_URL from "../../../../config/api";
@@ -89,11 +90,6 @@ export default async function handler(req, res) {
           videos.push(...videosIds);
         }
 
-        const errors = [];
-        let attributesDeleted = 0;
-
-        let successes = 0;
-
         // Remove one-to-one nodes from [Cat]
         console.time("one-to-one");
 
@@ -143,16 +139,36 @@ export default async function handler(req, res) {
         console.time("createCats");
         const createCatsResp = await batchedQueries(cats, createCats, 100, 1);
         console.timeEnd("createCats");
-        const respEvent = await createEvent({
+
+        const errors = [].concat(
+          ...deletePreviousIdsResp.errors,
+          ...deleteMicrochipsResp.errors,
+          ...videosResp.errors,
+          ...deleteCatLocationResp.errors,
+          ...deleteCatAdoptionFeeGroupResp.errors,
+          ...deleteCatAttributesResp.errors,
+          ...createCatsResp.errors
+        );
+
+        const successes =
+          deletePreviousIdsResp.successes +
+          deleteMicrochipsResp.successes +
+          videosResp.successes +
+          deleteCatLocationResp.successes +
+          deleteCatAdoptionFeeGroupResp.successes +
+          deleteCatAttributesResp.successes +
+          createCatsResp.successes;
+
+        const respEvent = await addImportEvent({
+          endTime: Math.floor(Date.now() / 1000),
+          endpoint: "api/cats/import",
+          errors,
+          imports: cats.length,
           since,
           startTime,
-          endTime: Math.floor(Date.now() / 1000),
-          tries: cats.length,
           successes,
-          attributesDeleted,
-          errors,
         });
-        res.status(200).json(respEvent.createEvent);
+        res.status(200).json(respEvent.addImportEvent);
       } else {
         res.status(401);
       }
