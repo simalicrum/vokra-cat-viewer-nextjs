@@ -1,12 +1,3 @@
-type Person {
-  id: ID!
-  FirstName: String
-  LastName: String
-  OutDateUnixTime: String
-  RelationshipType: String
-  Cat: Cat
-}
-
 type PreviousId {
   id: ID!
   IdValue: String
@@ -19,12 +10,13 @@ type Attribute {
   AttributeName: String
   Publish: String
   InternalID: String! @id @search(by: [fulltext])
+  Cats: [Cat]
 }
 
 type Location {
   Tier1: String
-  Tier2: String
-  Tier3: String
+  Tier2: String! @id
+  Cats: [Cat]
 }
 
 type Microchip {
@@ -36,15 +28,17 @@ type Microchip {
 }
 
 type AdoptionFeeGroup {
-  Id: String
+  Id: String! @id
   Name: String
   Price: String
   Discount: Float
   Tax: Int
+  Cats: [Cat]
 }
 
 type Video {
-  VideoId: String
+  id: ID!
+  VideoId: String! @id
   EmbedUrl: String
   YoutubeUrl: String
   ThumbUrl: String
@@ -58,11 +52,10 @@ type Cat {
   InternalID: String! @id @search(by: [fulltext])
   LitterGroupId: String
   Type: String
-  CurrentLocation: Location
+  CurrentLocation: Location @hasInverse(field: "Cats")
   Sex: String
   Status: String
   InFoster: Boolean
-  AssociatedPerson: Person @hasInverse(field: "Cat")
   CurrentWeightPounds: String
   Size: String
   Altered: String
@@ -74,11 +67,48 @@ type Cat {
   Breed: String
   Color: String
   Pattern: String
-  AdoptionFeeGroup: AdoptionFeeGroup
+  AdoptionFeeGroup: AdoptionFeeGroup @hasInverse(field: "Cats")
   Description: String
   PreviousIds: [PreviousId] @hasInverse(field: "Cat")
   LastIntakeUnixTime: String
   LastUpdatedUnixTime: String
   Microchips: [Microchip] @hasInverse(field: "Cat")
-  Attributes: [Attribute]
+  Attributes: [Attribute] @hasInverse(field: "Cats")
+  Events: [Event] @hasInverse(field: "Animal")
+}
+
+type Person {
+  Firstname: String
+  Lastname: String
+  Id: String
+  InternalID: String! @id @search(by: [fulltext])
+  Associated: String
+  Street: String
+  Apartment: String
+  City: String
+  State: String
+  Events: [Event] @hasInverse(field: "Person")
+}
+
+type Event {
+  Type: String
+  Subtype: String
+  Time: String
+  User: String
+  Animal: Cat
+  Person: Person
+}
+
+type Error {
+  type: String
+  content: String
+}
+
+type ImportEvent {
+  since: Int
+  startTime: Int
+  endTime: Int
+  tries: Int
+  successes: Int
+  errors: [Error]
 }

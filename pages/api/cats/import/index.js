@@ -4,8 +4,11 @@ import {
   createCats,
   getInternalIds,
   getArrayIds,
+  deleteCatEdges,
   deleteMicrochips,
   deletePreviousIds,
+  deletePersons,
+  deleteVideos,
   batchedQueries,
 } from "../../../../lib/dgraph";
 
@@ -48,19 +51,21 @@ export default async function handler(req, res) {
           if (cat.CurrentLocation === null) {
             delete cat.CurrentLocation;
           }
+          delete cat.AssociatedPerson;
         }
 
         const foundResp = await getInternalIds(internalIds).catch((error) =>
           console.error(error)
         );
 
-        const arrayIds = await getArrayIds(
-          [""].concat(foundResp.queryCat.map((element) => element.InternalID))
-        ).catch((error) => console.error(error));
+        const found = foundResp.queryCat.map((element) => element.InternalID);
+
+        const arrayIds = await getArrayIds([""].concat(found)).catch((error) =>
+          console.error(error)
+        );
 
         const previousIds = [];
         const microchips = [];
-        const person = [];
         const videos = [];
 
         for (let i = 0; i < arrayIds.queryCat.length; i++) {
@@ -70,15 +75,11 @@ export default async function handler(req, res) {
           const microchipIds = arrayIds.queryCat[i].Microchips.map(
             (element) => element.id
           );
-          const personIds = arrayIds.queryCat[i].PreviousIds.map(
-            (element) => element.id
-          );
-          const videosIds = arrayIds.queryCat[i].Microchips.map(
+          const videosIds = arrayIds.queryCat[i].Videos.map(
             (element) => element.id
           );
           previousIds.push(...previousIdsIds);
           microchips.push(...microchipIds);
-          person.push(...personIds);
           videos.push(...videosIds);
         }
 
@@ -87,25 +88,23 @@ export default async function handler(req, res) {
 
         let successes = 0;
 
-        const deletePreviousIdsResp = batchedQueries(
+        const deletePreviousIdsResp = await batchedQueries(
           previousIds,
           deletePreviousIds,
-          200,
-          4
+          100,
+          1
         );
 
-        const deleteMicrochipsResp = batchedQueries(
+        const deleteMicrochipsResp = await batchedQueries(
           microchips,
           deleteMicrochips,
-          200,
-          4
+          100,
+          1
         );
 
-        const personIdsResp = batchedQueries(person, deletePersons, 200, 4);
+        const videosResp = await batchedQueries(videos, deleteVideos, 100, 1);
 
-        const videosResp = batchedQueries(videos, deleteVideos, 200, 4);
-
-        const createCatsResp = batchedQueries(cats, createCats, 200, 4);
+        const createCatsResp = await batchedQueries(cats, createCats, 100, 1);
 
         const respEvent = await createEvent({
           since,
