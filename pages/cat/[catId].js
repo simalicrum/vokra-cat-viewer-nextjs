@@ -2,13 +2,13 @@ import { useRouter } from "next/router";
 import {
   getPublishableAndAdoptedCatsIds,
   getCatByInternalId,
-} from "../../lib/fauna";
+} from "../../lib/dgraph";
 import CatDetails from "../../components/CatDetails";
 
 export async function getStaticPaths() {
   const cats = await getPublishableAndAdoptedCatsIds();
   return {
-    paths: cats.findCatsByStatuses.map((cat) => ({
+    paths: cats.queryCat.map((cat) => ({
       params: {
         catId: cat.InternalID,
       },
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   let cats = [];
   const resp = await getCatByInternalId(params.catId);
-  const cat = resp.findCatByInternalId;
+  const cat = resp.getCat;
   const bonded = cat.Attributes.some(
     (element) => element.AttributeName === "Bonded"
   );
@@ -32,8 +32,8 @@ export async function getStaticProps({ params }) {
       const promises = bondedID.map((cat) => getCatByInternalId(cat.IdValue));
       const catBonded = await Promise.all(promises);
       catBonded.forEach((cat) => {
-        if (cat.findCatByInternalId !== null) {
-          cats.push(cat.findCatByInternalId);
+        if (cat.getCat !== null) {
+          cats.push(cat.getCat);
         }
       });
     }

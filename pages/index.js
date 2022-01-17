@@ -1,11 +1,11 @@
 import { returnCats } from "../lib/api";
-import { getPublishableCats } from "../lib/fauna";
+import { getPublishableCats } from "../lib/dgraph";
 import Head from "next/head";
 import Layout from "../components/Layout";
 
 export async function getStaticProps() {
   const resp = await getPublishableCats();
-  const cats = resp.findCatsByStatuses;
+  const cats = resp.queryCat;
   return {
     props: {
       cats,

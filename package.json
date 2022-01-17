@@ -5,12 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "fauna-prod": "fgu --envPath .env.production.local",
-    "fauna-dev": "fgu --envPath .env.development.local"
+    "start": "next start"
   },
   "dependencies": {
-    "faunadb": "^4.4.1",
     "graphql": "^16.1.0",
     "graphql-request": "^3.7.0",
     "is-regex": "^1.1.4",
@@ -26,7 +23,6 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.27.1",
-    "fauna-gql-upload": "^2.4.0",
     "postcss": "^8.3.0",
     "tailwindcss": "^2.1.2"
   }
