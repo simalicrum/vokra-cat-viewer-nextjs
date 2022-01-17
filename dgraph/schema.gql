@@ -9,7 +9,7 @@ type PreviousId {
 type Attribute {
   AttributeName: String
   Publish: String
-  InternalID: String! @id @search(by: [fulltext])
+  InternalID: String! @id @search(by: [hash])
   Cats: [Cat]
 }
 
@@ -24,14 +24,14 @@ type Microchip {
   id: ID!
   Id: String
   Issuer: String
-  ImplantUnixTime: String
+  ImplantUnixTime: Int
   Cat: Cat
 }
 
 type AdoptionFeeGroup {
   Id: String! @id
   Name: String
-  Price: String
+  Price: Int
   Discount: Float
   Tax: Int
   Cats: [Cat]
@@ -48,14 +48,14 @@ type Video {
 
 type Cat {
   id: ID!
-  Id: String
+  OrgId: String
   Name: String
-  InternalID: String! @id @search(by: [fulltext])
+  InternalID: String! @id @search(by: [hash])
   LitterGroupId: String
   Type: String
   CurrentLocation: Location @hasInverse(field: "Cats")
   Sex: String
-  Status: String
+  Status: String @search(by: [hash])
   InFoster: Boolean
   CurrentWeightPounds: String
   Size: String
@@ -71,8 +71,8 @@ type Cat {
   AdoptionFeeGroup: AdoptionFeeGroup @hasInverse(field: "Cats")
   Description: String
   PreviousIds: [PreviousId] @hasInverse(field: "Cat")
-  LastIntakeUnixTime: String
-  LastUpdatedUnixTime: String
+  LastIntakeUnixTime: Int
+  LastUpdatedUnixTime: Int @search
   Microchips: [Microchip] @hasInverse(field: "Cat")
   Attributes: [Attribute] @hasInverse(field: "Cats")
   Events: [Event] @hasInverse(field: "Animal")
@@ -81,8 +81,8 @@ type Cat {
 type Person {
   Firstname: String
   Lastname: String
-  Id: String
-  InternalID: String! @id @search(by: [fulltext])
+  OrgId: String
+  InternalID: String! @id @search(by: [hash])
   Associated: String
   Street: String
   Apartment: String

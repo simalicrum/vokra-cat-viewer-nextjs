@@ -35,11 +35,13 @@ export default async function handler(req, res) {
         const cats = await fetchCats(FETCH_URL, "", since);
         const internalIds = cats.map((element) => element["Internal-ID"]);
 
+        // Cat object refactored to conform to graph schema
+
         for (let cat of cats) {
           delete Object.assign(cat, { ["InternalID"]: cat["Internal-ID"] })[
             "Internal-ID"
           ];
-          delete Object.assign(cat, { ["Id"]: cat["ID"] })["ID"];
+          delete Object.assign(cat, { ["OrgId"]: cat["ID"] })["ID"];
           if (cat.Attributes) {
             const fixedAttributes = cat.Attributes.map((element) => {
               return {
@@ -56,11 +58,31 @@ export default async function handler(req, res) {
             if (cat.CurrentLocation) {
               cat.CurrentLocation.id = cat.CurrentLocation.Tier1;
               if (cat.CurrentLocation.Tier2) {
-                cat.CurrentLocation.id += cat.CurrentLocation.Tier2;
+                cat.CurrentLocation.id = `${cat.CurrentLocation.id} - ${cat.CurrentLocation.Tier2}`;
               }
             }
           }
           delete cat.AssociatedPerson;
+          cat.LastIntakeUnixTime = parseInt(cat.LastIntakeUnixTime);
+          cat.LastUpdatedUnixTime = parseInt(cat.LastUpdatedUnixTime);
+          if (cat.Microchips) {
+            cat.Microchips = cat.Microchips.map((element) => {
+              return {
+                Id: element.Id,
+                Issuer: element.Issuer,
+                ImplantUnixTime: parseInt(element.ImplantUnixTime),
+              };
+            });
+          }
+          if (cat.AdoptionFeeGroup) {
+            cat.AdoptionFeeGroup = {
+              Id: cat.AdoptionFeeGroup.Id,
+              Name: cat.AdoptionFeeGroup.Name,
+              Price: parseInt(cat.AdoptionFeeGroup.Price),
+              Discount: cat.AdoptionFeeGroup.Discount,
+              Tax: cat.AdoptionFeeGroup.Tax,
+            };
+          }
         }
         console.timeEnd("Shelterluv fetch");
         console.time("getInternalIds");
@@ -103,18 +125,18 @@ export default async function handler(req, res) {
         const deletePreviousIdsResp = await batchedQueries(
           previousIds,
           deletePreviousIds,
-          100,
+          200,
           1
         );
 
         const deleteMicrochipsResp = await batchedQueries(
           microchips,
           deleteMicrochips,
-          100,
+          200,
           1
         );
 
-        const videosResp = await batchedQueries(videos, deleteVideos, 100, 1);
+        const videosResp = await batchedQueries(videos, deleteVideos, 200, 1);
         console.timeEnd("one-to-one");
 
         // Remove one-to-many Cat nodes from Location and AdoptionFeeGroup
@@ -122,7 +144,7 @@ export default async function handler(req, res) {
         const deleteCatLocationResp = await batchedQueries(
           foundResp,
           deleteCatLocation,
-          100,
+          200,
           1
         );
 
@@ -138,13 +160,13 @@ export default async function handler(req, res) {
         const deleteCatAttributesResp = await batchedQueries(
           foundResp,
           deleteCatAttributes,
-          100,
+          200,
           1
         );
         console.timeEnd("many-to-many");
         // createCat mutation re-creates relationships from nested objects
         console.time("createCats");
-        const createCatsResp = await batchedQueries(cats, createCats, 100, 1);
+        const createCatsResp = await batchedQueries(cats, createCats, 200, 1);
         console.timeEnd("createCats");
 
         const errors = [].concat(
