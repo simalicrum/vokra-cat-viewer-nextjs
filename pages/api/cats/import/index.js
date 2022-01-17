@@ -1,5 +1,4 @@
 import { fetchCats } from "../../../../lib/api";
-import { createEvent, getLatestEventTimestamp } from "../../../../lib/fauna";
 import {
   createCats,
   getInternalIds,
@@ -12,6 +11,7 @@ import {
   deleteCatAttributes,
   batchedQueries,
   addImportEvent,
+  getLatestEventTimestamp,
 } from "../../../../lib/dgraph";
 
 import FETCH_URL from "../../../../config/api";
@@ -29,9 +29,8 @@ export default async function handler(req, res) {
           since = req.body.since;
         } else {
           const resp = await getLatestEventTimestamp();
-          since = resp.getLatestEventTimestamp;
+          since = resp.queryImportEvent[0].startTime;
         }
-
         const cats = await fetchCats(FETCH_URL, "", since);
         const internalIds = cats.map((element) => element["Internal-ID"]);
 
@@ -86,12 +85,17 @@ export default async function handler(req, res) {
         }
         console.timeEnd("Shelterluv fetch");
         console.time("getInternalIds");
-        const foundResp = await getInternalIds(internalIds).catch((error) =>
-          console.error(error)
+        const foundResp = await getInternalIds([""].concat(internalIds)).catch(
+          (error) => console.error(error)
         );
         console.timeEnd("getInternalIds");
         console.time("foundResp.queryCat");
-        const found = foundResp.queryCat.map((element) => element.InternalID);
+
+        let found = [];
+
+        if (foundResp.queryCat) {
+          found = foundResp.queryCat.map((element) => element.InternalID);
+        }
         console.timeEnd("foundResp.queryCat");
         console.time("getArrayIds");
         const arrayIds = await getArrayIds([""].concat(found)).catch((error) =>
