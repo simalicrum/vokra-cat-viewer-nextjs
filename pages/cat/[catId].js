@@ -20,6 +20,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   let cats = [];
   const resp = await getCatByInternalId(params.catId);
+  let timeout = await new Promise((resolve) => setTimeout(resolve, 20));
   const cat = resp.getCat;
   const bonded = cat.Attributes.some(
     (element) => element.AttributeName === "Bonded"
