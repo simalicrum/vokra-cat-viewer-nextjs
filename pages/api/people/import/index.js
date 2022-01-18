@@ -40,7 +40,8 @@ export default async function handler(req, res) {
           }
           previousPerson = person;
         }
-        const internalIds = people.map((element) => element["Internal-ID"]);
+        const internalIds = people.map((element) => element.InternalID);
+
         console.timeEnd("Shelterluv fetch");
         console.time("getInternalPersonIds");
         const foundResp = await getInternalPersonIds(
@@ -60,7 +61,7 @@ export default async function handler(req, res) {
           (error) => console.error(error)
         );
         console.timeEnd("getArrayPersonIds");
-        // Find and remove one-to-one nodes from [Cat]
+        // Find and remove one-to-one nodes from [Person]
 
         const previousIds = [];
 
