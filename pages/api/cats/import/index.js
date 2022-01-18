@@ -1,8 +1,8 @@
 import { fetchCats } from "../../../../lib/api";
 import {
   createCats,
-  getInternalIds,
-  getArrayIds,
+  getInternalCatIds,
+  getArrayCatIds,
   deleteMicrochips,
   deletePreviousIds,
   deleteVideos,
@@ -14,7 +14,7 @@ import {
   getLatestEventTimestamp,
 } from "../../../../lib/dgraph";
 
-import FETCH_URL from "../../../../config/api";
+import { CAT_FETCH_URL } from "../../../../config/api";
 
 export default async function handler(req, res) {
   try {
@@ -31,11 +31,10 @@ export default async function handler(req, res) {
           const resp = await getLatestEventTimestamp();
           since = resp.queryImportEvent[0].startTime;
         }
-        const cats = await fetchCats(FETCH_URL, "", since);
+        const cats = await fetchCats(CAT_FETCH_URL, "", since);
         const internalIds = cats.map((element) => element["Internal-ID"]);
 
         // Cat object refactored to conform to graph schema
-
         for (let cat of cats) {
           delete Object.assign(cat, { ["InternalID"]: cat["Internal-ID"] })[
             "Internal-ID"
@@ -84,11 +83,11 @@ export default async function handler(req, res) {
           }
         }
         console.timeEnd("Shelterluv fetch");
-        console.time("getInternalIds");
-        const foundResp = await getInternalIds([""].concat(internalIds)).catch(
-          (error) => console.error(error)
-        );
-        console.timeEnd("getInternalIds");
+        console.time("getInternalCatIds");
+        const foundResp = await getInternalCatIds(
+          [""].concat(internalIds)
+        ).catch((error) => console.error(error));
+        console.timeEnd("getInternalCatIds");
         console.time("foundResp.queryCat");
 
         let found = [];
@@ -97,13 +96,13 @@ export default async function handler(req, res) {
           found = foundResp.queryCat.map((element) => element.InternalID);
         }
         console.timeEnd("foundResp.queryCat");
-        console.time("getArrayIds");
-        const arrayIds = await getArrayIds([""].concat(found)).catch((error) =>
-          console.error(error)
+        console.time("getArrayCatIds");
+        const arrayIds = await getArrayCatIds([""].concat(found)).catch(
+          (error) => console.error(error)
         );
-        console.timeEnd("getArrayIds");
-        // Find and remove one-to-one nodes from [Cat]
+        console.timeEnd("getArrayCatIds");
 
+        // Find and remove one-to-one nodes from [Cat]
         const previousIds = [];
         const microchips = [];
         const videos = [];
@@ -168,6 +167,7 @@ export default async function handler(req, res) {
           1
         );
         console.timeEnd("many-to-many");
+
         // createCat mutation re-creates relationships from nested objects
         console.time("createCats");
         const createCatsResp = await batchedQueries(cats, createCats, 200, 1);

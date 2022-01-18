@@ -4,6 +4,7 @@ type PreviousId {
   IssuingShelter: String
   Type: String
   Cat: Cat
+  Person: Person
 }
 
 type Attribute {
@@ -79,10 +80,12 @@ type Cat {
 }
 
 type Person {
+  id: ID!
   Firstname: String
   Lastname: String
   OrgId: String
   InternalID: String! @id @search(by: [hash])
+  PreviousIds: [PreviousId] @hasInverse(field: "Person")
   Associated: String
   Street: String
   Apartment: String
