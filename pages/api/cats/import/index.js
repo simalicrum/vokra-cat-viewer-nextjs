@@ -128,18 +128,18 @@ export default async function handler(req, res) {
         const deletePreviousIdsResp = await batchedQueries(
           previousIds,
           deletePreviousIds,
-          200,
-          1
+          500,
+          10
         );
 
         const deleteMicrochipsResp = await batchedQueries(
           microchips,
           deleteMicrochips,
-          200,
-          1
+          500,
+          10
         );
 
-        const videosResp = await batchedQueries(videos, deleteVideos, 200, 1);
+        const videosResp = await batchedQueries(videos, deleteVideos, 500, 10);
         console.timeEnd("one-to-one");
 
         // Remove one-to-many Cat nodes from Location and AdoptionFeeGroup
@@ -147,15 +147,15 @@ export default async function handler(req, res) {
         const deleteCatLocationResp = await batchedQueries(
           foundResp,
           deleteCatLocation,
-          200,
-          1
+          500,
+          10
         );
 
         const deleteCatAdoptionFeeGroupResp = await batchedQueries(
           foundResp,
           deleteCatAdoptionFeeGroup,
-          100,
-          1
+          500,
+          10
         );
         console.timeEnd("one-to-many");
         // Remove many-to-many Cat nodes from Attributes
@@ -163,14 +163,14 @@ export default async function handler(req, res) {
         const deleteCatAttributesResp = await batchedQueries(
           foundResp,
           deleteCatAttributes,
-          200,
-          1
+          500,
+          10
         );
         console.timeEnd("many-to-many");
 
         // createCat mutation re-creates relationships from nested objects
         console.time("createCats");
-        const createCatsResp = await batchedQueries(cats, createCats, 200, 1);
+        const createCatsResp = await batchedQueries(cats, createCats, 2000, 10);
         console.timeEnd("createCats");
 
         const errors = [].concat(

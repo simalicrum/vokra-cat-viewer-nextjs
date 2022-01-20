@@ -18,8 +18,11 @@ export default async function handler(req, res) {
       if (req.headers.action_key === process.env.APP_KEY) {
         const startTime = Math.floor(Date.now() / 1000);
         console.time("Shelterluv fetch");
-
-        const peopleRaw = await fetchPeople(PEOPLE_FETCH_URL);
+        let first;
+        if (req.body.first) {
+          first = req.body.first;
+        }
+        const peopleRaw = await fetchPeople(PEOPLE_FETCH_URL, first);
 
         // Person object refactored to conform to graph schema
 
@@ -77,8 +80,8 @@ export default async function handler(req, res) {
         const deletePreviousIdsResp = await batchedQueries(
           previousIds,
           deletePreviousIds,
-          200,
-          1
+          500,
+          10
         );
         console.timeEnd("one-to-one");
 
@@ -87,8 +90,8 @@ export default async function handler(req, res) {
         const createPeopleResp = await batchedQueries(
           people,
           createPeople,
-          200,
-          1
+          2000,
+          10
         );
         console.timeEnd("createPeople");
 
