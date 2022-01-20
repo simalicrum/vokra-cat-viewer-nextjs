@@ -31,6 +31,7 @@ export default async function handler(req, res) {
               event.Cat = { InternalID: record.Id };
             }
           }
+          event.Time = parseInt(event.Time);
           delete event.AssociatedRecords;
           event.id = JSON.stringify(event);
           if (previousEvent) {
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
         const createEventsResp = await batchedQueries(
           events,
           createEvents,
-          2000,
+          4000,
           10
         );
         console.timeEnd("createEvent");
@@ -57,7 +58,7 @@ export default async function handler(req, res) {
 
         const respEvent = await addImportEvent({
           endTime: Math.floor(Date.now() / 1000),
-          endpoint: "api/people/import",
+          endpoint: "api/events/import",
           errors,
           imports: events.length,
           startTime,

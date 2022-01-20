@@ -76,7 +76,7 @@ type Cat {
   LastUpdatedUnixTime: Int @search
   Microchips: [Microchip] @hasInverse(field: "Cat")
   Attributes: [Attribute] @hasInverse(field: "Cats")
-  Events: [Event] @hasInverse(field: "Animal")
+  Events: [Event] @hasInverse(field: "Cat")
 }
 
 type Person {
@@ -92,14 +92,18 @@ type Person {
   City: String
   State: String
   Events: [Event] @hasInverse(field: "Person")
+  Zip: String
+  Email: String
+  Phone: String
 }
 
 type Event {
+  id: String! @id
   Type: String
   Subtype: String
-  Time: String
+  Time: Int
   User: String
-  Animal: Cat
+  Cat: Cat
   Person: Person
 }
 
