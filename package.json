@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@apollo/client": "^3.5.7",
     "graphql": "^16.1.0",
     "graphql-request": "^3.7.0",
     "is-regex": "^1.1.4",

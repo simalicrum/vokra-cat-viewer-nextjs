@@ -92,8 +92,8 @@ export default async function handler(req, res) {
 
         let found = [];
 
-        if (foundResp.queryCat) {
-          found = foundResp.queryCat.map((element) => element.InternalID);
+        if (foundResp.data.queryCat) {
+          found = foundResp.data.queryCat.map((element) => element.InternalID);
         }
         console.timeEnd("foundResp.queryCat");
         console.time("getArrayCatIds");
@@ -102,19 +102,21 @@ export default async function handler(req, res) {
         );
         console.timeEnd("getArrayCatIds");
 
+        console.log(arrayIds);
+
         // Find and remove one-to-one nodes from [Cat]
         const previousIds = [];
         const microchips = [];
         const videos = [];
 
-        for (let i = 0; i < arrayIds.queryCat.length; i++) {
-          const previousIdsIds = arrayIds.queryCat[i].PreviousIds.map(
+        for (let i = 0; i < arrayIds.data.queryCat.length; i++) {
+          const previousIdsIds = arrayIds.data.queryCat[i].PreviousIds.map(
             (element) => element.id
           );
-          const microchipIds = arrayIds.queryCat[i].Microchips.map(
+          const microchipIds = arrayIds.data.queryCat[i].Microchips.map(
             (element) => element.id
           );
-          const videosIds = arrayIds.queryCat[i].Videos.map(
+          const videosIds = arrayIds.data.queryCat[i].Videos.map(
             (element) => element.id
           );
           previousIds.push(...previousIdsIds);
@@ -170,7 +172,7 @@ export default async function handler(req, res) {
 
         // createCat mutation re-creates relationships from nested objects
         console.time("createCats");
-        const createCatsResp = await batchedQueries(cats, createCats, 2000, 10);
+        const createCatsResp = await batchedQueries(cats, createCats, 100, 10);
         console.timeEnd("createCats");
 
         const errors = [].concat(
@@ -201,7 +203,7 @@ export default async function handler(req, res) {
           startTime,
           successes,
         });
-        res.status(200).json(respEvent.addImportEvent);
+        res.status(200).json(respEvent.data.addImportEvent);
       } else {
         res.status(401);
       }
