@@ -80,8 +80,8 @@ export default async function handler(req, res) {
         const deletePreviousIdsResp = await batchedQueries(
           previousIds,
           deletePreviousIds,
-          500,
-          10
+          200,
+          40
         );
         console.timeEnd("one-to-one");
 
@@ -90,8 +90,8 @@ export default async function handler(req, res) {
         const createPeopleResp = await batchedQueries(
           people,
           createPeople,
-          2000,
-          10
+          500,
+          20
         );
         console.timeEnd("createPeople");
 

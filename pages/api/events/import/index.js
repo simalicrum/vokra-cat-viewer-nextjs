@@ -47,8 +47,8 @@ export default async function handler(req, res) {
         const createEventsResp = await batchedQueries(
           events,
           createEvents,
-          4000,
-          10
+          500,
+          20
         );
         console.timeEnd("createEvent");
 
