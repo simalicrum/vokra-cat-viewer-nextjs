@@ -8,13 +8,12 @@ import CatDetails from "../../components/CatDetails";
 
 export async function getStaticPaths() {
   // const cats = await getPublishableAndAdoptedCatsIds();
-  const cats = [];
   return {
-    paths: cats.queryCat.map((cat) => ({
-      params: {
-        catId: cat.InternalID,
-      },
-    })),
+    // paths: cats.queryCat.map((cat) => ({
+    //   params: {
+    //     catId: cat.InternalID,
+    //   },
+    // })),
     fallback: "blocking",
   };
 }
