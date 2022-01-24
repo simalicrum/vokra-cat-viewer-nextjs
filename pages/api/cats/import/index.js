@@ -22,6 +22,7 @@ export default async function handler(req, res) {
       res.status(401).json("Access key required");
     } else {
       if (req.headers.action_key === process.env.APP_KEY) {
+        res.status(202).json({ status: "accepted" });
         const startTime = Math.floor(Date.now() / 1000);
         console.time("Shelterluv fetch");
         let since;
@@ -201,7 +202,6 @@ export default async function handler(req, res) {
           startTime,
           successes,
         });
-        res.status(200).json(respEvent.addImportEvent);
       } else {
         res.status(401);
       }

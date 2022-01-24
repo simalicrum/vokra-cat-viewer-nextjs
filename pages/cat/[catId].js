@@ -2,11 +2,13 @@ import { useRouter } from "next/router";
 import {
   getPublishableAndAdoptedCatsIds,
   getCatByInternalId,
+  batchedQueries,
 } from "../../lib/dgraph";
 import CatDetails from "../../components/CatDetails";
 
 export async function getStaticPaths() {
-  const cats = await getPublishableAndAdoptedCatsIds();
+  // const cats = await getPublishableAndAdoptedCatsIds();
+  const cats = [];
   return {
     paths: cats.queryCat.map((cat) => ({
       params: {
