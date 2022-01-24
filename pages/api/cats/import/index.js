@@ -23,6 +23,7 @@ export default async function handler(req, res) {
     } else {
       if (req.headers.action_key === process.env.APP_KEY) {
         res.status(202).json({ status: "accepted" });
+        console.log("DId this even happen?");
         const startTime = Math.floor(Date.now() / 1000);
         console.time("Shelterluv fetch");
         let since;
