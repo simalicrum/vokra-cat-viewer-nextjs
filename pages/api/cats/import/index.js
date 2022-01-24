@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     } else {
       if (req.headers.action_key === process.env.APP_KEY) {
         res.status(202).json({ status: "accepted" });
-        console.log("DId this even happen?");
+        console.log("Did this even happen?");
         const startTime = Math.floor(Date.now() / 1000);
         console.time("Shelterluv fetch");
         let since;
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         }
         const cats = await fetchCats(CAT_FETCH_URL, "", since);
         const internalIds = cats.map((element) => element["Internal-ID"]);
-
+        console.log("We got here");
         // Cat object refactored to conform to graph schema
         for (let cat of cats) {
           delete Object.assign(cat, { ["InternalID"]: cat["Internal-ID"] })[
